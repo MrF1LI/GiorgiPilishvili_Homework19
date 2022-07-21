@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  ViewControllerWithoutStackView.swift
 //  GiorgiPilishvili_Homework19
 //
 //  Created by GIORGI PILISSHVILI on 21.07.22.
@@ -7,8 +7,8 @@
 
 import UIKit
 
-class ViewController: UIViewController {
-    
+class ViewControllerWithoutStackView: UIViewController {
+
     // MARK: Views
     
     lazy var labelTitle: UILabel = {
@@ -17,17 +17,11 @@ class ViewController: UIViewController {
         return labelTitle
     }()
     
-    lazy var stackView: UIStackView = {
-        var stackView = UIStackView()
-        view.addSubview(stackView)
-        return stackView
-    }()
-    
     // Logo
     
     lazy var imageViewContainer: UIView = { // For imageViewLogo Shadow
         var imageViewContainer = UIView()
-        stackView.addArrangedSubview(imageViewContainer)
+        view.addSubview(imageViewContainer)
         return imageViewContainer
     }()
     
@@ -37,34 +31,26 @@ class ViewController: UIViewController {
         return imageViewLogo
     }()
     
-    // Text Fields Container
-    
-    lazy var stackViewTextFields: UIStackView = {
-        var stackViewTextFields = UIStackView()
-        stackView.addArrangedSubview(stackViewTextFields)
-        return stackViewTextFields
-    }()
-    
     // Text Fields
     
     lazy var textFieldEmail: UITextField = {
         var textFieldEmail = UITextField()
-        stackViewTextFields.addArrangedSubview(textFieldEmail)
+        view.addSubview(textFieldEmail)
         return textFieldEmail
     }()
     
     lazy var textFieldPassword: UITextField = {
         var textFieldPassword = UITextField()
-        stackViewTextFields.addArrangedSubview(textFieldPassword)
+        view.addSubview(textFieldPassword)
         return textFieldPassword
     }()
     
-    // Sign In / Sign Up
+    // Sign In / Sign Up buttons
     
     lazy var buttonSignIn: UIButton = {
         var buttonSignIn = UIButton()
         buttonSignIn.addTarget(self, action: #selector(self.signInButtonAction), for: .touchUpInside)
-        stackView.addArrangedSubview(buttonSignIn)
+        view.addSubview(buttonSignIn)
         return buttonSignIn
     }()
         
@@ -86,10 +72,8 @@ class ViewController: UIViewController {
     func configureDesign() {
         addBackground()
         addLabelTitle()
-        addStackView()
         addImageViewContainer()
         addImageViewLogo()
-        addStackViewTextFields()
         addTextFieldEmail()
         addTextFieldPassword()
         addButtonSignIn()
@@ -147,30 +131,6 @@ class ViewController: UIViewController {
         
     }
     
-    func addStackView() {
-        
-        stackView.axis = .vertical
-        stackView.alignment = .center
-        stackView.spacing = 50
-        
-        // Constraints
-        
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        // Width
-        
-        NSLayoutConstraint(item: stackView,
-                           attribute: .width,
-                           relatedBy: .equal,
-                           toItem: view,
-                           attribute: .width,
-                           multiplier: 0.9,
-                           constant: 0).isActive = true
-        
-    }
-    
     func addImageViewContainer() { // For imageViewLogo Shadow
         
         imageViewContainer.clipsToBounds = false
@@ -179,16 +139,22 @@ class ViewController: UIViewController {
         // Constraints
         
         imageViewContainer.translatesAutoresizingMaskIntoConstraints = false
-        imageViewContainer.centerXAnchor.constraint(equalTo: stackView.centerXAnchor).isActive = true
+        imageViewContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
+        let imageViewContainerGuide = UILayoutGuide()
+        view.addLayoutGuide(imageViewContainerGuide)
+        imageViewContainerGuide.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 3/5).isActive = true
+        imageViewContainerGuide.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        imageViewContainer.centerYAnchor.constraint(equalTo: imageViewContainerGuide.centerYAnchor).isActive = true
+
         // Width
         
         NSLayoutConstraint(item: imageViewContainer,
                            attribute: .width,
                            relatedBy: .equal,
-                           toItem: stackView,
+                           toItem: view.safeAreaLayoutGuide,
                            attribute: .width,
-                           multiplier: 0.70,
+                           multiplier: 0.6,
                            constant: 0).isActive = true
         
         // Height
@@ -210,7 +176,7 @@ class ViewController: UIViewController {
         // Constraints
         
         imageViewLogo.translatesAutoresizingMaskIntoConstraints = false
-        
+                
         // Width
         
         NSLayoutConstraint(item: imageViewLogo,
@@ -244,32 +210,8 @@ class ViewController: UIViewController {
         
     }
     
-    func addStackViewTextFields() {
-        
-        stackViewTextFields.axis = .vertical
-        stackViewTextFields.distribution  = .equalSpacing
-        stackViewTextFields.alignment = .fill
-        stackViewTextFields.spacing = 15
-        
-        // Constraints
-                
-        stackViewTextFields.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Width
-        
-        NSLayoutConstraint(item: stackViewTextFields,
-                           attribute: .width,
-                           relatedBy: .equal,
-                           toItem: stackView,
-                           attribute: .width,
-                           multiplier: 1,
-                           constant: 0).isActive = true
-                
-    }
-    
     func addTextFieldEmail() {
         
-        textFieldEmail.translatesAutoresizingMaskIntoConstraints = false
         textFieldEmail.placeholder = "Email"
         textFieldEmail.backgroundColor = .white
         textFieldEmail.layer.cornerRadius = 15
@@ -277,7 +219,32 @@ class ViewController: UIViewController {
         
         setShadow(view: textFieldEmail)
         
-        // Height constraint
+        // Constraints
+        
+        textFieldEmail.translatesAutoresizingMaskIntoConstraints = false
+        textFieldEmail.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        // Top
+        
+        NSLayoutConstraint(item: textFieldEmail,
+                           attribute: .top,
+                           relatedBy: .equal,
+                           toItem: imageViewContainer,
+                           attribute: .bottom,
+                           multiplier: 1,
+                           constant: 50).isActive = true
+        
+        // Width constraint
+        
+        NSLayoutConstraint(item: textFieldEmail,
+                           attribute: .width,
+                           relatedBy: .equal,
+                           toItem: view.safeAreaLayoutGuide,
+                           attribute: .width,
+                           multiplier: 0.9,
+                           constant: 0).isActive = true
+        
+        // Height
         
         NSLayoutConstraint(item: textFieldEmail,
                            attribute: .height,
@@ -286,12 +253,11 @@ class ViewController: UIViewController {
                            attribute: .notAnAttribute,
                            multiplier: 1,
                            constant: 50).isActive = true
-
+        
     }
     
     func addTextFieldPassword() {
         
-        textFieldPassword.translatesAutoresizingMaskIntoConstraints = false
         textFieldPassword.placeholder = "Password"
         textFieldPassword.backgroundColor = .white
         textFieldPassword.layer.cornerRadius = 15
@@ -299,21 +265,45 @@ class ViewController: UIViewController {
         
         setShadow(view: textFieldPassword)
         
-        // Height constraint
+        // Constraints
+        
+        textFieldPassword.translatesAutoresizingMaskIntoConstraints = false
+        textFieldPassword.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        // Top
+        
+        NSLayoutConstraint(item: textFieldPassword,
+                           attribute: .top,
+                           relatedBy: .equal,
+                           toItem: textFieldEmail,
+                           attribute: .bottom,
+                           multiplier: 1,
+                           constant: 15).isActive = true
+        
+        // Width constraint
+        
+        NSLayoutConstraint(item: textFieldPassword,
+                           attribute: .width,
+                           relatedBy: .equal,
+                           toItem: textFieldEmail,
+                           attribute: .width,
+                           multiplier: 1,
+                           constant: 0).isActive = true
+        
+        // Height
         
         NSLayoutConstraint(item: textFieldPassword,
                            attribute: .height,
                            relatedBy: .equal,
-                           toItem: nil,
-                           attribute: .notAnAttribute,
+                           toItem: textFieldEmail,
+                           attribute: .height,
                            multiplier: 1,
-                           constant: 50).isActive = true
-
+                           constant: 0).isActive = true
+        
     }
     
     func addButtonSignIn() {
         
-        buttonSignIn.translatesAutoresizingMaskIntoConstraints = false
         buttonSignIn.setTitle("Sign In", for: .normal)
         buttonSignIn.backgroundColor = .systemGreen
         buttonSignIn.layer.cornerRadius = 15
@@ -321,15 +311,30 @@ class ViewController: UIViewController {
         // Shadow
         
         setShadow(view: buttonSignIn)
-                
-        // Width constraint
+        
+        // Constraints
+        
+        buttonSignIn.translatesAutoresizingMaskIntoConstraints = false
+        buttonSignIn.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        // Top
+        
+        NSLayoutConstraint(item: buttonSignIn,
+                           attribute: .top,
+                           relatedBy: .equal,
+                           toItem: textFieldPassword,
+                           attribute: .bottom,
+                           multiplier: 1,
+                           constant: 50).isActive = true
+        
+        // Width
         
         NSLayoutConstraint(item: buttonSignIn,
                            attribute: .width,
                            relatedBy: .equal,
-                           toItem: stackView,
+                           toItem: view.safeAreaLayoutGuide,
                            attribute: .width,
-                           multiplier: 0.85,
+                           multiplier: 0.75,
                            constant: 0).isActive = true
         
         // Height
@@ -376,8 +381,12 @@ class ViewController: UIViewController {
         
     }
     
+    @objc func signInButtonAction(sender: UIButton) {
+        dismiss(animated: true)
+    }
+    
     // Shadow function for text fields and button
-
+    
     func setShadow(view: UIView) {
         view.layer.shadowColor = UIColor.black.cgColor
         view.layer.shadowOffset = CGSize(width: 10, height: 10)
@@ -385,27 +394,5 @@ class ViewController: UIViewController {
         view.layer.shadowRadius = 10
         view.layer.masksToBounds = false
     }
-    
-    // თუ StackView არ უნდა გამომეყენებინა 😁
-    
-    @objc func signInButtonAction(sender: UIButton) {
-        let vc = self.storyboard?.instantiateViewController(withIdentifier: "ViewControllerWithoutStackView")
-        guard let vc = vc else { return }
-        
-        vc.modalPresentationStyle = .fullScreen
-        present(vc, animated: true)
-    }
-    
-}
 
-// Extension For TextField padding
-
-extension UITextField {
-    
-    func setLeftPadding(_ amount:CGFloat){
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: amount, height: self.frame.size.height))
-        self.leftView = paddingView
-        self.leftViewMode = .always
-    }
-    
 }
